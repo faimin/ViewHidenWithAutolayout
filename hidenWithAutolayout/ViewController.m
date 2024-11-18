@@ -24,11 +24,9 @@
 
 - (IBAction)ClickAtion:(id)sender
 {
-//    self.redview.hidden=!self.redview.hidden;
+    [self.redview foldConstraint:!self.redview.hidden attributes:NSLayoutAttributeTop, NSLayoutAttributeHeight, nil];
 
-	[self.redview hideWithAutoLayoutAttributes:NSLayoutAttributeTop, NSLayoutAttributeHeight, nil];
-
-	[self.pinkView hideWithAutoLayoutAttributes:NSLayoutAttributeLeft, NSLayoutAttributeWidth, nil];
+    [self.pinkView foldConstraint:!self.pinkView attributes:NSLayoutAttributeLeft, NSLayoutAttributeWidth, nil];
 }
 
 - (void)didReceiveMemoryWarning

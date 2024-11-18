@@ -11,20 +11,16 @@
 
 @implementation UIView (HidenWithAutoLayoutConstraints)
 
-- (void)hideWithAutoLayoutAttributes:(NSLayoutAttribute)attributes, ...NS_REQUIRES_NIL_TERMINATION
-{
+- (void)foldConstraint:(BOOL)fold attributes:(NSLayoutAttribute)attributes, ...NS_REQUIRES_NIL_TERMINATION {
     va_list ap;
     va_start(ap, attributes);
 
-    if (attributes)
-    {
-        [self hideView:!self.hidden withAttribute:attributes];
+    if (attributes) {
+        [self foldConstraint:fold attribute:attributes];
 
         NSLayoutAttribute detailAttribute;
-
-        while ( ( detailAttribute = va_arg(ap, NSLayoutAttribute) ) )
-        {
-            [self hideView:!self.hidden withAttribute:detailAttribute];
+        while ((detailAttribute = va_arg(ap, NSLayoutAttribute))) {
+            [self foldConstraint:!self.hidden attribute:detailAttribute];
         }
     }
 
@@ -32,182 +28,78 @@
     self.hidden = !self.hidden;
 }
 
-- (void)hideView:(BOOL)hidden withAttribute:(NSLayoutAttribute)attribute
-{
+- (void)foldConstraint:(BOOL)fold attribute:(NSLayoutAttribute)attribute {
     NSLayoutConstraint *constraint = [self constraintForAttribute:attribute];
-    if (constraint)
-    {
-        NSString *constraintString = [self AttributeToString:attribute];
-        NSNumber *savednumber      = objc_getAssociatedObject(self, [constraintString UTF8String]);
-
-        if (!savednumber)
-        {
-            objc_setAssociatedObject(self, [constraintString UTF8String], @(constraint.constant), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-            savednumber = @(constraint.constant);
-        }
-
-        if (hidden)
-        {
-            [constraint setConstant:0];
-        }
-        else
-        {
-            [constraint setConstant:savednumber.floatValue];
-        }
+    if (!constraint) {
+        return;
+    }
+    
+    NSString *constraintString = [self attributeToString:attribute];
+    NSNumber *originConstant = objc_getAssociatedObject(self, constraintString.UTF8String);
+    if (!originConstant) {
+        objc_setAssociatedObject(self, [constraintString UTF8String], @(constraint.constant), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        originConstant = @(constraint.constant);
+    }
+    
+    if (fold) {
+        constraint.constant = 0;
+    } else {
+        constraint.constant = originConstant.floatValue;
     }
 }
 
-- (CGFloat)constraintConstantforAttribute:(NSLayoutAttribute)attribute
-{
+- (CGFloat)constraintConstantForAttribute:(NSLayoutAttribute)attribute {
     NSLayoutConstraint *constraint = [self constraintForAttribute:attribute];
-    if (constraint)
-    {
+    if (constraint) {
         return constraint.constant;
-    }
-    else
-    {
+    } else {
         return NAN;
     }
 }
 
-- (NSLayoutConstraint *)constraintForAttribute:(NSLayoutAttribute)attribute
-{
-    NSPredicate *predicate      = [NSPredicate predicateWithFormat:@"firstAttribute = %d && firstItem = %@", attribute, self];
-    NSArray     *constraintsArr = [self.superview constraints];
-    NSArray     *fillteredArray = [constraintsArr filteredArrayUsingPredicate:predicate];
-
-    if (fillteredArray.count == 0)
-    {
-        NSArray *selffillteredArray = [self.constraints filteredArrayUsingPredicate:predicate];
-        if (selffillteredArray.count == 0)
-        {
-            return nil;
-        }
-        else
-        {
-            return selffillteredArray.firstObject;
-        }
+- (NSLayoutConstraint *)constraintForAttribute:(NSLayoutAttribute)attribute {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"firstAttribute = %d && firstItem = %@", attribute, self];
+    
+    NSArray<__kindof NSLayoutConstraint *> *constraints= self.superview.constraints;
+    NSArray<__kindof NSLayoutConstraint *> *filteredArray = [constraints filteredArrayUsingPredicate:predicate];
+    NSLayoutConstraint *constraint = filteredArray.firstObject;
+    if (constraint) {
+        return constraint;
     }
-    else
-    {
-        return fillteredArray.firstObject;
-    }
-} /* constraintForAttribute */
+    
+    NSArray *selfFilteredArray = [self.constraints filteredArrayUsingPredicate:predicate];
+    return selfFilteredArray.firstObject;
+}
 
-- (NSString *)AttributeToString:(NSLayoutAttribute)attribute
-{
-    switch (attribute)
-    {
-        case NSLayoutAttributeLeft:
-        {
-            return @"NSLayoutAttributeLeft";
-        }
+#define ATRRIBUTE(_attribute) \
+@(_attribute): @#_attribute,
 
-        case NSLayoutAttributeRight:
-        {
-            return @"NSLayoutAttributeRight";
-        }
-
-        case NSLayoutAttributeTop:
-        {
-            return @"NSLayoutAttributeTop";
-        }
-
-        case NSLayoutAttributeBottom:
-        {
-            return @"NSLayoutAttributeBottom";
-        }
-
-        case NSLayoutAttributeLeading:
-        {
-            return @"NSLayoutAttributeLeading";
-        }
-
-        case NSLayoutAttributeTrailing:
-        {
-            return @"NSLayoutAttributeTrailing";
-        }
-
-        case NSLayoutAttributeWidth:
-        {
-            return @"NSLayoutAttributeWidth";
-        }
-
-        case NSLayoutAttributeHeight:
-        {
-            return @"NSLayoutAttributeHeight";
-        }
-
-        case NSLayoutAttributeCenterX:
-        {
-            return @"NSLayoutAttributeCenterX";
-        }
-
-        case NSLayoutAttributeCenterY:
-        {
-            return @"NSLayoutAttributeCenterY";
-        }
-
-        case NSLayoutAttributeBaseline:
-        {
-            return @"NSLayoutAttributeBaseline";
-        }
-
-        case NSLayoutAttributeFirstBaseline:
-        {
-            return @"NSLayoutAttributeFirstBaseline";
-        }
-
-        case NSLayoutAttributeLeftMargin:
-        {
-            return @"NSLayoutAttributeLeftMargin";
-        }
-
-        case NSLayoutAttributeRightMargin:
-        {
-            return @"NSLayoutAttributeRightMargin";
-        }
-
-        case NSLayoutAttributeTopMargin:
-        {
-            return @"NSLayoutAttributeTopMargin";
-        }
-
-        case NSLayoutAttributeBottomMargin:
-        {
-            return @"NSLayoutAttributeBottomMargin";
-        }
-
-        case NSLayoutAttributeLeadingMargin:
-        {
-            return @"NSLayoutAttributeLeadingMargin";
-        }
-
-        case NSLayoutAttributeTrailingMargin:
-        {
-            return @"NSLayoutAttributeTrailingMargin";
-        }
-
-        case NSLayoutAttributeCenterXWithinMargins:
-        {
-            return @"NSLayoutAttributeCenterXWithinMargins";
-        }
-
-        case NSLayoutAttributeCenterYWithinMargins:
-        {
-            return @"NSLayoutAttributeCenterYWithinMargins";
-        }
-
-        case NSLayoutAttributeNotAnAttribute:
-        {
-            return @"NSLayoutAttributeNotAnAttribute";
-        }
-
-        default:
-            break;
-    } /* switch */
-
-    return @"NSLayoutAttributeNotAnAttribute";
-} /* AttributeToString */
+- (NSString *)attributeToString:(NSLayoutAttribute)attribute {
+    NSDictionary<NSNumber *, NSString *> *attributeMap = @{
+        @(NSLayoutAttributeLeft): @"NSLayoutAttributeLeft",
+        @(NSLayoutAttributeRight): @"NSLayoutAttributeRight",
+        @(NSLayoutAttributeTop): @"NSLayoutAttributeTop",
+        @(NSLayoutAttributeBottom): @"NSLayoutAttributeBottom",
+        @(NSLayoutAttributeLeading): @"NSLayoutAttributeLeading",
+        @(NSLayoutAttributeTrailing): @"NSLayoutAttributeTrailing",
+        @(NSLayoutAttributeWidth): @"NSLayoutAttributeWidth",
+        @(NSLayoutAttributeHeight): @"NSLayoutAttributeHeight",
+        @(NSLayoutAttributeCenterX): @"NSLayoutAttributeCenterX",
+        @(NSLayoutAttributeCenterY): @"NSLayoutAttributeCenterY",
+        @(NSLayoutAttributeBaseline): @"NSLayoutAttributeBaseline",
+        @(NSLayoutAttributeFirstBaseline): @"NSLayoutAttributeFirstBaseline",
+        @(NSLayoutAttributeLeftMargin): @"NSLayoutAttributeLeftMargin",
+        @(NSLayoutAttributeRightMargin): @"NSLayoutAttributeRightMargin",
+        @(NSLayoutAttributeLeadingMargin): @"NSLayoutAttributeLeadingMargin",
+        @(NSLayoutAttributeTrailingMargin): @"NSLayoutAttributeTrailingMargin",
+        @(NSLayoutAttributeTopMargin): @"NSLayoutAttributeTopMargin",
+        @(NSLayoutAttributeBottomMargin): @"NSLayoutAttributeBottomMargin",
+        @(NSLayoutAttributeCenterXWithinMargins): @"NSLayoutAttributeCenterXWithinMargins",
+        @(NSLayoutAttributeCenterYWithinMargins): @"NSLayoutAttributeCenterYWithinMargins",
+        @(NSLayoutAttributeNotAnAttribute): @"NSLayoutAttributeNotAnAttribute",
+    };
+    NSString *value = attributeMap[@(attribute)] ?: @"NSLayoutAttributeNotAnAttribute";
+    return value;
+}
 
 @end

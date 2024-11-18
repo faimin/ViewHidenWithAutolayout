@@ -190,11 +190,12 @@
 					};
 				};
 			};
-			buildConfigurationList = EA6C35561B856E2A002D25BA /* Build configuration list for PBXProject "HidenWithAutolayout" */;
+			buildConfigurationList = EA6C35561B856E2A002D25BA /* Build configuration list for PBXProject "hidenWithAutolayout" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -366,6 +367,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = hidenWithAutolayout/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = HidenWithAutolayout.temp_caseinsensitive_rename;
 			};
@@ -376,6 +378,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = hidenWithAutolayout/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = HidenWithAutolayout.temp_caseinsensitive_rename;
 			};
@@ -418,7 +421,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		EA6C35561B856E2A002D25BA /* Build configuration list for PBXProject "HidenWithAutolayout" */ = {
+		EA6C35561B856E2A002D25BA /* Build configuration list for PBXProject "hidenWithAutolayout" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EA6C357C1B856E2A002D25BA /* Debug */,
